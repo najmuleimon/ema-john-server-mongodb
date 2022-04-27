@@ -30,8 +30,49 @@ async function run(){
         // get or read single product
         app.get('/product/:id', async(req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            console.log(id);
+            const query = {_id: id};
             const result = await productCollection.findOne(query);
+            res.send(result);
+        })
+
+        // upload or create a product
+        app.post('/upload', async(req, res) => {
+            const product = req.body;
+            const result = await productCollection.insertOne(product);
+            res.send(result);
+        })
+
+        // update product
+        app.put('/update/:id', async(req, res) => {
+            const updatedProduct = req.body;
+            const id = req.params.id;
+            console.log(id);
+            const filter = {_id: id};
+            const options = { upsert: true };
+
+            const updateDoc = {
+                $set: {
+                    updatedProduct
+                //   name: updateProduct.name,
+                //   category: updateProduct.category,
+                //   seller: updateProduct.seller,
+                //   price: updateProduct.price,
+                //   stock: updateProduct.stock,
+                //   img: updateProduct.img,
+                //   quantity: updateProduct.quantity
+                }
+              };
+              const result = await productCollection.updateOne(filter, updateDoc, options);
+              res.send(result);
+        })
+
+
+        // delete product
+        app.delete('/product/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: id};
+            const result = await productCollection.deleteOne(query);
             res.send(result);
         })
     }
